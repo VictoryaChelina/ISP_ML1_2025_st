@@ -16,7 +16,9 @@ def euclidean_distance(X, Y) -> np.ndarray:
     np.ndarray of size M * N
         Each element of which is the Euclidean distance between the corresponding pair of vectors from the arrays X and Y
     """
-    raise NotImplementedError()
+    X_ = X[:, np.newaxis, :] # X_ shape M, 1, K
+    Y_ = Y[np.newaxis, :, :] # Y_ shape 1, N, K
+    return np.sqrt(np.square(X_ - Y_).sum(axis=2))
 
 
 # 2 points
@@ -34,7 +36,9 @@ def cosine_distance(X, Y) -> np.ndarray:
     np.ndarray of size M * N
         Each element of which is the cosine distance between the corresponding pair of vectors from the arrays X and Y
     """
-    raise NotImplementedError()
+    X_norm = np.linalg.norm(X, axis=1).reshape(-1, 1)
+    Y_norm = np.linalg.norm(Y, axis=1).reshape(-1, 1)
+    return 1 - X @ Y.T / (X_norm @ Y_norm.T)
 
 
 # 1 point
@@ -52,4 +56,4 @@ def manhattan_distance(X, Y) -> np.ndarray:
     np.ndarray of size M * N
         Each element of which is the manhattan distance between the corresponding pair of vectors from the arrays X and Y
     """
-    raise NotImplementedError()
+    return np.abs((X[:, np.newaxis, :] - Y[np.newaxis, :, :])).sum(axis=2)
