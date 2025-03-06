@@ -47,7 +47,7 @@ class LinearLoss(BaseLoss):
         -------
         : float
         """
-        pass
+        return np.square(y - X @ w).sum()/X.shape[0] + self.l2_coef * np.square(w[1:]).sum()
 
     def grad(self, X, y, w):
         """
