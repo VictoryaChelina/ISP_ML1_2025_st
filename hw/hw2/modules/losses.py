@@ -62,5 +62,7 @@ class LinearLoss(BaseLoss):
         -------
         : 1d numpy.ndarray
         """
-        pass
+        gradient = (2 * X.T @ (X @ w - y)) / X.shape[0]
+        gradient[1:] += 2 * self.l2_coef * w[1:]  
+        return gradient
 
