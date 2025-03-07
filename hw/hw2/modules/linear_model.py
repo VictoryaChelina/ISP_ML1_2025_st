@@ -28,7 +28,15 @@ class LinearModel:
         max_iter : int
             Max amount of epoches in method.
         """
-        pass
+        self.loss_function = loss_function
+        self.batch_size = batch_size
+        self.step_alpha = step_alpha
+        self.step_beta = step_beta
+        self.tolerance = tolerance
+        self.max_iter = max_iter
+        self.random_seed = random_seed
+        np.random.seed(self.random_seed)
+        self.weights = None
 
     def fit(self, X, y, w_0=None, trace=False, X_val=None, y_val=None):
         """
@@ -54,7 +62,13 @@ class LinearModel:
             Keys are 'time', 'func', 'func_val'.
             Each key correspond to list of metric values after each training epoch.
         """
-        pass
+        self.weights = w_0 if w_0 is not None else np.random.randn(X.shape[1])
+        history = {
+            'time': [],
+            'func': [],
+            'func_val': []
+        } if trace is not None else None
+        
 
     def predict(self, X):
         """
