@@ -67,8 +67,33 @@ class LinearModel:
             'time': [],
             'func': [],
             'func_val': []
-        } if trace is not None else None
-        
+        } if trace else None
+        prev_loss = float('inf')
+        batch_size = self.batch_size or X.shape[0]
+
+        for epoch in range(self.max_iter):
+            start_time = time.time()
+            learning_rate = self.step_alpha / ((epoch + 1) ** (self.step_beta))
+            perm = np.random.permutation(X.shape[0])
+
+            for i in range(0, X.shape[0], batch_size):
+                batch = perm[i:i + batch_size]
+                X_batch = X[batch]
+                Y_batch = y[batch]
+                self.weights -= learning_rate * self.loss_function.grad(X_batch, Y_batch, self.weights) 
+            
+            loss = self.loss_function.func(X, y, self.weights)
+            if trace:
+                history['time'].append(time.time() - start_time)
+                history['func'].append(loss)
+                if X_val is not None and y_val is not None:
+                    history['func_val'].append(self.loss_function.func(X_val, y_val, self.weights))
+            
+            if abs(prev_loss - loss) < self.tolerance:
+                break
+
+            prev_loss = loss
+        return history
 
     def predict(self, X):
         """
@@ -83,7 +108,7 @@ class LinearModel:
         : numpy.ndarray
             answers on a test set
         """
-        pass
+        return X @ self.weights
 
     def get_weights(self):
         """
@@ -94,7 +119,7 @@ class LinearModel:
         : numpy.ndarray
             1d model weights vector.
         """
-        pass
+        return self.weights
 
     def get_objective(self, X, y):
         """
@@ -111,4 +136,4 @@ class LinearModel:
         -------
         : float
         """
-        pass
+        return self.loss_function.func(X, y, self.weights)
