@@ -68,7 +68,7 @@ class LinearModel:
             'func': [],
             'func_val': []
         } if trace else None
-        prev_loss = float('inf')
+        prev_weights = np.ones(X.shape[1]) * np.inf
         batch_size = self.batch_size or X.shape[0]
 
         for epoch in range(self.max_iter):
@@ -82,17 +82,16 @@ class LinearModel:
                 Y_batch = y[batch]
                 self.weights -= learning_rate * self.loss_function.grad(X_batch, Y_batch, self.weights) 
             
-            loss = self.loss_function.func(X, y, self.weights)
             if trace:
                 history['time'].append(time.time() - start_time)
-                history['func'].append(loss)
+                history['func'].append(self.loss_function.func(X, y, self.weights))
                 if X_val is not None and y_val is not None:
                     history['func_val'].append(self.loss_function.func(X_val, y_val, self.weights))
             
-            if abs(prev_loss - loss) < self.tolerance:
+            if np.linalg.norm(prev_weights - self.weights) < self.tolerance:
                 break
 
-            prev_loss = loss
+            prev_weights = np.copy(self.weights)
         return history
 
     def predict(self, X):
